@@ -17,7 +17,13 @@
 
     shuffle($teams);
 
+    $flags = array_fill(0, $num_teams, 0);
+    for ($i = 0; $i < $num_teams / 2; $i++) {
+        $flags[$i] = 1;
+    }
+
     $calendar = [];
+
 
     for ($round = 1; $round <= $num_teams * 2 - 2; $round++) {
         $calendar[$round] = [];
@@ -30,19 +36,19 @@
                 $away = $num_teams - 1;
             }
 
-            $calendar[$round][] = [$teams[$home], $teams[$away]];
-        }
+            $home_flag = $flags[$home];
+            $away_flag = $flags[$away];
 
-        if ($round == $num_teams - 1) {
-            for ($j = 0; $j < $num_teams - 1; $j++) {
-                $calendar[$round + 1 + $j] = [];
-                foreach ($calendar[1 + $j] as $match) {
-
-                    $calendar[$round + 1 + $j][] = [$match[1], $match[0]];
-                }
+            if ($home_flag == 1) {
+                $calendar[$round][] = [$teams[$home] => $home_flag, $teams[$away] => $away_flag];
+            } else {
+                $calendar[$round][] = [$teams[$away] => $away_flag, $teams[$home] => $home_flag];
             }
-            break;
         }
+
+        $flags = array_map(function($flag) {
+            return $flag ? 0 : 1;
+        }, $flags);
     }
 
     foreach ($calendar as $round => $matches) {
@@ -56,8 +62,8 @@
             </div>
         HEADER;
         foreach ($matches as $match) {
-            $team1 = $match[0];
-            $team2 = $match[1];
+            $team1 = array_keys($match)[0];
+            $team2 = array_keys($match)[1];
             $count1 = rand(0, 3);
             $count2 = rand(0, 3);
             while ($count1 == 0 && $count2 == 0) {
