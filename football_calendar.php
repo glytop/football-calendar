@@ -18,31 +18,29 @@
     shuffle($teams);
 
     $calendar = [];
-    // Генерация календаря для первого и второго круга
+
     for ($round = 1; $round <= $num_teams * 2 - 2; $round++) {
         $calendar[$round] = [];
 
         for ($i = 0; $i < $num_teams / 2; $i++) {
             $home = ($round + $i) % ($num_teams - 1);
             $away = ($num_teams - 1 - $i + $round) % ($num_teams - 1);
-            // Для предотвращения игры команды с самой собой
+
             if ($home == $away) {
                 $away = $num_teams - 1;
             }
-            // Добавляем матч в расписание
+
             $calendar[$round][] = [$teams[$home], $teams[$away]];
         }
 
-        // После 19-го тура (первого круга) меняем команды местами для второго круга
         if ($round == $num_teams - 1) {
             for ($j = 0; $j < $num_teams - 1; $j++) {
                 $calendar[$round + 1 + $j] = [];
                 foreach ($calendar[1 + $j] as $match) {
-                    // Меняем местами домашнюю и гостевую команды
+
                     $calendar[$round + 1 + $j][] = [$match[1], $match[0]];
                 }
             }
-            // Прерываем цикл, так как календарь второго круга уже сформирован
             break;
         }
     }
